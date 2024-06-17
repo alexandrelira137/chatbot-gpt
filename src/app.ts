@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { sendWhatsappMessage } from './services/twilio';
 import dotenv from 'dotenv';
+import { getOpenAICompletion } from './services/openai';
 
 
 const app = express()
@@ -30,7 +31,9 @@ app.post('/chat/receive', async (req, res) => {
     const to = twilioRequestBody.From
 
     try {
-        await sendWhatsappMessage(to, messageBody)
+        const completion = await getOpenAICompletion(messageBody)
+
+        await sendWhatsappMessage(to, completion)
         res.status(200).json({ success: true, messageBody })
     } catch (error) {
         res.status(500).json({ success: false, error })
@@ -41,5 +44,5 @@ app.post('/chat/receive', async (req, res) => {
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
-    console.log(`O servdor está rodando na porta:${port}`)
+    console.log(`O servidor está rodando na porta:${port}`)
 })
