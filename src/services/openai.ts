@@ -1,25 +1,20 @@
-import {Configuration, OpenAIApi} from 'openai';
-import dotenv from 'dotenv';
+import OpenAI from 'openai'
+import dotenv from 'dotenv'
 
 dotenv.config()
 
-const config = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 })
 
-const openai = new OpenAIApi(config)
-
-export const getOpenAICompletion = async(input: string): Promise<string> => {
+export const getOpenAICompletion = async (input: string): Promise<string> => {
     try {
-        const completion = await openai.createChatCompletion({
+        const completion = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
-            messages: [{
-                role: "user",
-                content: input
-            }]
+            messages: [{role: "user", content: input}]
         })
-        return completion.data.choices[0].message?.content as string
-    } catch (error) {
+        return completion.choices[0].message?.content as string
+    } catch(error) {
         console.log(`Error completing input: ${error}`)
         return ''
     }
